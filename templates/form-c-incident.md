@@ -168,21 +168,21 @@ Chỗ hai cột lệch nhau chính là nơi đặt gate.
 
 | Dấu hiệu | Có? | Bằng chứng trong thẻ / data |
 |---|---|---|
-| Việc này đụng tới lĩnh vực nhạy cảm: tiền, quan hệ kinh doanh với đối tác | | |
-| Hệ trọng cao và cách làm bằng AI còn mới với người liên quan: họ muốn nắm quyền lúc đầu để xây lòng tin | | |
-| Hệ thống còn lâu mới đạt độ chính xác mong muốn; quyền của con người là biện pháp tạm trong lúc chờ | | |
-| Giới hạn hoặc lỗi của hệ thống cần con người sửa lại | | |
-| Hoàn cảnh thay đổi khiến con người phải "đặt lại" hoặc "tiếp quản" (phê duyệt hết hạn, bị thu hồi; chính sách đổi) | | |
+| Việc này đụng tới lĩnh vực nhạy cảm: tiền, quan hệ kinh doanh với đối tác | Có | AI thực hiện lệnh `issue_refund`, ảnh hưởng trực tiếp đến tiền của LogiX. Các ticket S5-02, S5-03, S5-20, S5-21 có tình trạng hoàn trùng; các hãng GHSH, VNX bị ghi lỗi oan. |
+| Hệ trọng cao và cách làm bằng AI còn mới với người liên quan: họ muốn nắm quyền lúc đầu để xây lòng tin | Có | Nhân viên duyệt và trưởng ca phải kiểm soát các quyết định hoàn tiền. Khi người duyệt không tin quyết định của trợ lý, quy trình yêu cầu tạm dừng lệnh ghi và chuyển chị Hạnh kiểm tra lại. |
+| Hệ thống còn lâu mới đạt độ chính xác mong muốn; quyền của con người là biện pháp tạm trong lúc chờ | Chưa đủ bằng chứng | Thẻ S5 có lỗi dữ liệu và giới hạn nghiệp vụ, nhưng chưa có số liệu chứng minh độ chính xác của AI còn thấp hoặc con người chỉ giữ quyền tạm thời để chờ AI cải thiện. |
+| Giới hạn hoặc lỗi của hệ thống cần con người sửa lại | Có | `refund_status` là bản sao cập nhật mỗi đêm, không phản ánh hoàn tiền tức thời. Trợ lý không đọc `ledger_rows` nên có thể hoàn trùng. Ticket vượt hạn mức hoặc vượt ngân sách phải chuyển người xử lý. |
+| Hoàn cảnh thay đổi khiến con người phải "đặt lại" hoặc "tiếp quản" (phê duyệt hết hạn, bị thu hồi; chính sách đổi) | Có | Chính sách REFUND-v4 có hiệu lực ngày 01/12/2026, giảm `auto_limit_vnd` từ 200.000đ xuống 100.000đ. Nhóm phải quyết định lại phạm vi pilot trước ngày 30/11/2026. |
 
 **Bước 2 · Bảng mức kiểm soát**
 
-| Ai (vai, tên trong `staff` nếu có) | Việc / lệnh ghi | Mức kiểm soát họ **cần** (thấp / vừa / cao / chưa rõ) | Mức hệ thống **đang cho** (xem trace) | Lệch? |
+| Ai (vai, tên trong `staff` nếu có) | Việc / lệnh ghi | Mức kiểm soát họ **cần** | Mức hệ thống **đang cho** (xem trace) | Lệch? |
 |---|---|---|---|---|
-| | `issue_refund` dưới hạn mức tự động | | | |
-| | `issue_refund` trên hạn mức tự động (S8 chỉ điền dòng này) | | | |
-| | `issue_refund` mà người trả là shop | | | |
-| | nhiều khoản hoàn tự động cho một khách trong ngày | | | |
-| | | | | |
+| Trần Thị Hạnh (`NV-HANH`) – trưởng ca CSKH | `issue_refund` dưới hạn mức tự động | Vừa – cần được xem căn cứ và kiểm tra mẫu các khoản hoàn | Thấp – agent tự quyết định và ghi hoàn, không cần người duyệt từng ca | Có – cần gate kiểm tra tổng tiền đã hoàn trong `ledger_rows`; kiểm mẫu và ghi `decision_note`, chuyển chị Hạnh khi có bất thường |
+| Trần Thị Hạnh (`NV-HANH`) – người duyệt | `issue_refund` trên hạn mức tự động | Cao – phải trực tiếp duyệt và đứng tên khoản hoàn | Thấp – hệ thống có thể tìm mã `approval_id` hợp lệ để dùng, chưa kiểm tra mã đã được sử dụng hay chưa | Có – gate chặn nếu không có phê duyệt hợp lệ; chuyển chị Hạnh duyệt trước khi ghi |
+| Phạm Kiều Oanh (`NV-OANH`) – kế toán đối soát | `issue_refund` mà người trả là shop | Cao – cần đối chiếu khoản tiền và lịch sử giao dịch với shop | Chưa rõ – tài liệu chưa có trace cụ thể chứng minh quyền duyệt hoàn của shop | Chưa đủ bằng chứng – gate yêu cầu đối chiếu sổ và chuyển người có thẩm quyền xử lý |
+| Trần Thị Hạnh (`NV-HANH`) – trưởng ca CSKH | Nhiều khoản hoàn tự động cho một khách trong ngày | Cao – cần kiểm soát tổng tiền hoàn theo khách/đơn trong ngày | Thấp – agent có thể hoàn nhiều lần do `refund_status` chỉ cập nhật qua batch ban đêm | Có – gate đối chiếu `ledger_rows(order_id)`; nếu đã hoàn đủ thì chặn, nếu có hoàn tay thì chuyển CSKH kiểm tra |
+| Lê Thanh Tùng (`NV-TUNG`) – PIC vận hành trợ lý | Tắt hoặc dừng `issue_refund` khi phát hiện sự cố | Cao – cần quyền dừng thao tác ghi để giới hạn thiệt hại | Cao – có quyền chuyển `issue_refund` từ `on` sang `off` | Không – quyền dừng đã được quy định trong runbook |
 
 → Mỗi dòng "Lệch" là một nhánh của fault tree và một ứng viên cho gate. Ghi rõ gate **trả quyền về cho ai** (chuyển người
 duyệt, chờ duyệt, trần).
@@ -195,19 +195,19 @@ duyệt, chờ duyệt, trần).
 **Cách làm:** thảo luận theo nhóm rồi ghi cho **từng nhóm người dùng**: họ là ai, mục tiêu chính là gì, và hiện
 nay họ làm việc này **từng bước ra sao**, đồng đều hay mỗi nơi một kiểu. Dòng cuối: **hệ thống đang mang hình dung nào**, đọc từ trace.
 
-| | Nhóm A: `__________` (gợi ý: điều phối / tài xế của hãng) | Nhóm B: `__________` (gợi ý: kế toán đối soát hoặc CSKH) |
+| | Nhóm A: `Điều phối / tài xế hãng vận chuyển` (gợi ý: điều phối / tài xế của hãng) | Nhóm B: `Kế toán đối soát / CSKH LogiX` (gợi ý: kế toán đối soát hoặc CSKH) |
 |---|---|---|
-| Họ là ai, chạm vào kết quả của trợ lý ở đâu | | |
-| Mục tiêu chính của họ | | |
-| Hiện nay họ xác định "ai chịu lỗi giao trễ" theo các bước nào | | |
-| Cách làm đó đồng đều hay mỗi nơi một kiểu | | |
-| Theo hình dung của họ, **đơn vị chịu lỗi** là gì (đơn / kiện / chặng / tài xế)? | | |
+| Họ là ai, chạm vào kết quả của trợ lý ở đâu |Tiếp nhận thông tin đơn giao trễ và lỗi hãng bị ghi nhận. |
+| Mục tiêu chính của họ |Xác định đúng kiện, chặng và hãng gây trễ|Ghi nhận đúng bên chịu trách nhiệm, tránh khiếu nại sai. |
+| Hiện nay họ xác định "ai chịu lỗi giao trễ" theo các bước nào | Tra mã đơn → kiểm tra từng kiện → xem tracking → xác định chặng trễ → xác định hãng phụ trách. | Nhận ticket → tra đơn → đối chiếu tracking từng kiện → kiểm tra nguyên nhân → xác nhận hãng chịu lỗi.|
+| Cách làm đó đồng đều hay mỗi nơi một kiểu | Chưa đồng đều, tùy quy trình từng hãng.| Có quy trình chung nhưng phụ thuộc nhân viên và dữ liệu.|
+| Theo hình dung của họ, **đơn vị chịu lỗi** là gì (đơn / kiện / chặng / tài xế)? |Kiện hàng / chặng vận chuyển cụ thể. | Kiện hàng cụ thể, gắn với chặng và hãng phụ trách.|
 
 **Hệ thống đang mang hình dung nào?** (đọc trace một ticket hỏng: `tracking.parcels` so với dòng `file_carrier_fault`)
 
-- Với hệ thống, đơn vị chịu lỗi là: `__________`. Bằng chứng: ticket `______@seed ____`, dòng trace: `__________`.
-- Chỗ hai hình dung vênh nhau: `__________`.
-- Khi đầu vào không đủ để áp hình dung của con người (không biết kiện nào), hệ thống đang làm gì: `__________`; nên làm gì: `__________`.
+- Với hệ thống, đơn vị chịu lỗi là: `Kiện hàng (parcel).`. Bằng chứng: ticket `______@seed ____`, dòng trace: `__________`.
+- Chỗ hai hình dung vênh nhau: Con người xác định kiện thực sự giao trễ qua tracking; hệ thống có nguy cơ mặc định lấy parcels[0] để ghi lỗi hãng.
+- Khi đầu vào không đủ để áp hình dung của con người (không biết kiện nào), hệ thống đang làm gì: `Có nguy cơ vẫn chọn parcels[0] và gọi file_carrier_fault`; nên làm gì: `Dừng ghi lỗi tự động, chuyển nhân viên kiểm tra tracking và xác nhận đúng parcel_id, carrier_id, nguyên nhân giao trễ.`.
 
 → Mỗi chỗ vênh là một nhánh của fault tree. Gate tốt làm cho hệ thống hành xử theo hình dung của người chịu hậu quả.
 
@@ -220,16 +220,17 @@ Chỉ cần hai mốc có trong thẻ; mốc còn lại để trống nếu khô
 
 | Mốc | Nhóm | Tình huống cụ thể (lấy từ thẻ / ticket) | Dữ liệu của hệ thống liên quan (trường nào, đi tới đâu) | Điều người đó biết / không biết |
 |---|---|---|---|---|
-| **Tin quá mức** | người đặt hàng | | | |
-| **Tin quá mức** | người nhận hàng | | | |
-| **Không tin** (sau sự cố) | người nhận hàng | | | |
-| **Tin vừa đủ** (trạng thái muốn tới) | cả hai | | | |
+| **Tin quá mức** | Người đặt hàng | Người đặt hàng cung cấp thông tin người nhận khi tạo đơn và tin rằng thông tin chỉ được LogiX sử dụng để giao hàng. | Thông tin người nhận được lưu trong dữ liệu đơn hàng; cần kiểm tra trường thông tin người nhận trong payload gửi đối tác giao hàng. | Biết mình đã cung cấp thông tin để giao hàng, nhưng có thể không biết chính xác dữ liệu nào được chuyển cho bên thứ ba. |
+| **Tin quá mức** | Người nhận hàng | Người nhận nghĩ rằng thông tin cá nhân của mình chỉ được người đặt hàng và đơn vị giao hàng biết trong phạm vi giao hàng. | Thông tin người nhận trong đơn hàng có thể được chuyển tới đơn vị vận chuyển để thực hiện giao hàng. | Không trực tiếp sử dụng hệ thống, không ký thỏa thuận với LogiX và không biết dữ liệu của mình được xử lý, chia sẻ như thế nào. |
+| **Không tin (sau sự cố)** | Người nhận hàng | Để trống – chưa có bằng chứng xác nhận người nhận phản ánh hoặc mất lòng tin sau một sự cố cụ thể. | Chưa có log xác nhận trường dữ liệu nào bị lộ và bên nào đã nhận dữ liệu. | Chưa có bằng chứng về phản ứng thực tế của người nhận hàng. |
+| **Tin vừa đủ** (trạng thái muốn tới) | Cả hai | Người đặt hàng và người nhận chỉ kỳ vọng hệ thống sử dụng thông tin đúng mục đích giao hàng, không chia sẻ ngoài phạm vi cần thiết. | Chỉ chuyển các trường dữ liệu tối thiểu cần thiết cho đơn vị vận chuyển; kiểm soát payload trước khi gửi. | Người đặt hàng hiểu dữ liệu được dùng để giao hàng; người nhận không cần dùng hệ thống nhưng thông tin của họ vẫn được bảo vệ theo đúng phạm vi cần thiết. |
 
 **Rút ra:**
-- Dữ liệu nào rời hệ thống mà người liên quan **không biết** là nó rời đi: `__________` → tới `__________`.
-- Để lòng tin khớp thực tế, có hai đường: **giải thích** cho người dùng dữ liệu đi đâu, hoặc **làm cho hệ thống chỉ làm đúng
-  điều người ta tưởng**. Với người nhận hàng (không có kênh nào để giải thích), đường khả thi là: `__________`.
-- Biện pháp đó là giảm khả năng lộ hay bảo đảm không lộ: `__________`.
+- Dữ liệu nào rời hệ thống mà người liên quan không biết là nó rời đi: thông tin cá nhân người nhận trong dữ liệu đơn hàng → tới đơn vị vận chuyển/đối tác nhận payload giao hàng.
+
+- Để lòng tin khớp thực tế, với người nhận hàng (không có kênh nào để giải thích), đường khả thi là: làm cho hệ thống chỉ gửi các trường dữ liệu tối thiểu cần thiết để giao hàng, không gửi dữ liệu không phục vụ giao hàng.
+
+- Biện pháp đó là giảm khả năng lộ hay bảo đảm không lộ: giảm khả năng lộ, không bảo đảm tuyệt đối không lộ.
 
 ### C3.4 · Hiệu chỉnh lòng tin · nhân viên duyệt và trưởng ca đứng tên (S8)
 
@@ -237,16 +238,18 @@ Cùng cách làm như C3.3. Mốc "tin quá mức" là trước kiểm toán, m�
 
 | Mốc | Nhóm | Tình huống cụ thể (lấy từ thẻ / ticket) | Dữ liệu của hệ thống liên quan (trường nào, đi tới đâu) | Điều người đó biết / không biết |
 |---|---|---|---|---|
-| **Tin quá mức** (trước kiểm toán) | nhân viên duyệt | | | |
-| **Tin quá mức** (trước kiểm toán) | trưởng ca đứng tên | | | |
-| **Không tin** (sau kiểm toán) | nhân viên duyệt | | | |
-| **Không tin** (sau kiểm toán) | trưởng ca đứng tên | | | |
-| **Tin vừa đủ** (trạng thái muốn tới) | cả hai | | | |
+| **Tin quá mức** (trước kiểm toán) | nhân viên duyệt | Nhân viên tin rằng trợ lý chỉ thực hiện hoàn tiền khi đã qua cổng kiểm tra và có phê duyệt hợp lệ; vì vậy có thể dựa vào kết quả hệ thống mà không kiểm tra lại từng quyết định. | `issue_refund`, số tiền hoàn, trạng thái ticket và thông tin phê duyệt (`approval_id`, `max_vnd`, `status`) được dùng để quyết định ghi hoàn vào sổ cái. | Biết hệ thống có cổng kiểm tra và hạn mức; chưa nhìn thấy đầy đủ căn cứ, lịch sử sử dụng phê duyệt và lý do cho từng quyết định.
+| **Tin quá mức** (trước kiểm toán) | trưởng ca đứng tên | Trưởng ca tin rằng quyết định hoàn vượt hạn mức chỉ được thực hiện khi có người có thẩm quyền duyệt; tin rằng tên người duyệt gắn với khoản hoàn là đủ để truy trách nhiệm. | Thông tin người duyệt, `approval_id`, `max_vnd`, `status` và sự kiện `issue_refund` được dùng để xác nhận quyền duyệt và ghi nhận khoản hoàn. | Biết mình chịu trách nhiệm với khoản vượt hạn mức; chưa chắc biết một phê duyệt có thể bị tái sử dụng nếu hệ thống không kiểm tra lịch sử đã dùng.
+| **Không tin** (sau kiểm toán) | nhân viên duyệt | Sau khi kiểm toán phát hiện cổng kiểm tra chưa thể hiện đầy đủ căn cứ quyết định và lịch sử sử dụng phê duyệt, nhân viên không còn yên tâm để hệ thống tự xử lý mà muốn kiểm tra lại từng ca. | `approval_id`, `status`, `max_vnd`, dữ liệu sổ cái và sự kiện `issue_refund`; cần đối chiếu phê duyệt với các dòng hoàn đã ghi. | Biết hệ thống có thể kiểm tra trạng thái phê duyệt nhưng lo ngại trạng thái `valid` chưa chứng minh phê duyệt chưa được sử dụng.
+| **Không tin** (sau kiểm toán) | trưởng ca đứng tên | Trưởng ca lo ngại tên mình bị gắn với khoản hoàn sai hoặc khoản hoàn lặp nếu phê duyệt bị sử dụng nhiều lần mà hệ thống không phát hiện. | `approval_id` liên kết với dòng trong sổ cái và sự kiện `issue_refund`; lịch sử ghi hoàn là căn cứ đối soát trách nhiệm. | Biết mình là người chịu trách nhiệm duyệt khoản vượt hạn mức; cần xem được khoản hoàn thực tế, căn cứ duyệt và lịch sử sử dụng phê duyệt.
+| **Tin vừa đủ** (trạng thái muốn tới) | cả hai | Hệ thống tự xử lý các quyết định nằm trong hạn mức và điều kiện đã được kiểm chứng; ca vượt hạn mức, thiếu căn cứ hoặc có dấu hiệu bất thường phải chuyển người duyệt. | Mỗi quyết định hiển thị ticket, số tiền, căn cứ, hạn mức, `approval_id`, trạng thái phê duyệt, lịch sử sổ cái, kết quả cổng kiểm tra và `decision_note`. | Nhân viên thấy đủ căn cứ để kiểm tra mẫu; trưởng ca giữ quyền duyệt/từ chối khoản vượt hạn mức và quyền yêu cầu dừng thao tác ghi.
+
+
 
 **Rút ra:**
-- Dữ liệu nào của hệ thống làm lòng tin lệch: `__________`.
+- Dữ liệu nào của hệ thống làm lòng tin lệch:  Trạng thái phê duyệt `approval_id/status` nếu chỉ thể hiện `valid` mà không đối chiếu lịch sử đã sử dụng trong sổ cái; cùng với dữ liệu `issue_refund` và `decision_note`.
 - Để người duyệt thôi kiểm tay từng quyết định, họ cần **thấy** gì ở mỗi quyết định, cần **giữ quyền** ở đâu, và
-  tỉ lệ kiểm mẫu nào hai bên chấp nhận: `__________`. Ghi các con số đó vào `config/operating_gates.json` mục `operations`.
+  tỉ lệ kiểm mẫu nào hai bên chấp nhận: Kiểm mẫu tối thiểu 10% quyết định tự động, kèm ghi chú giải thích; 1 người duyệt mỗi ca, công suất 6 ca/giờ, thời gian chờ tối đa 60 phút. Ghi các con số đó vào `config/operating_gates.json` mục `operations`.
 - Kèm **một dòng** "`issue_refund` trên hạn mức tự động" ở bảng C3.1 Bước 2.
 
 ### C3.5 · Mở lại bản đồ dữ liệu (S1, S3, S5; viết bằng bút khác màu)
@@ -494,7 +497,7 @@ Cột v1 nằm ở Phiếu B mục B8; không sửa cột đó.
 | Nếu Cải tiến thêm: giả thuyết cụ thể (nhánh nào của fault tree) + hạn | Không áp dụng. |
 | Nếu Dừng: bài học ghi lại | Không áp dụng. |
 | Ngày quyết định lại (trừ khi Dừng) | **30/11/2026**, trước khi REFUND-v4 có hiệu lực ngày 01/12/2026. Hạn mức tự động giảm còn 100.000đ nên sẽ có thêm nhóm ticket bị kẹt như kho sỉ; phải đo lại `max_cost_per_ticket_by_warehouse_vnd` theo kho. Hoặc quyết định lại sớm hơn nếu chạm một điều kiện dừng trong `operations.stop_conditions`. |
-| PIC ký | Kỹ sư cổng: Lý Hà Trân Trân · Kỹ sư cổng: ______ · Sản phẩm và kinh doanh: ______ · Vận hành và pháp lý: ______ *(cả bàn chốt quyết định)* |
+| PIC ký | Kỹ sư cổng: Lý Hà Trân Trân · Kỹ sư cổng: ______ · Sản phẩm và kinh doanh: ______ · Vận hành và pháp lý:Vương Thu Thảo*(cả bàn chốt quyết định)* |
 
 **Chỉ ở v2**
 - **Quyết định đổi hay giữ so với v1? Vì con số nào:** **Đổi từ "Tiếp tục" (HN + HCM) sang "Thu hẹp" (4 kho đơn lẻ, loại HCM-B2B).**
