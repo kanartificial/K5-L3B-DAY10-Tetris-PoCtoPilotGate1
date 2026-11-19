@@ -13,7 +13,7 @@ Họ tên đầy đủ và MSSV của **mọi** thành viên; bàn 3 người th
 
 | STT | Họ và tên | MSSV | Vai | Trưởng nhóm |
 | --: | --------- | ---- | --- | :---------: |
-|   1 |  Khổng Ngọc Anh         |    2A202603974  |   Kỹ sư cổng  |             |
+|   1 |  Khổng Ngọc Anh         |    2A202603974  |   Kỹ sư cổng  |      x      |
 |   2 |     Lý Hà Trân Trân      |   2A202603968   |   Kỹ sư cổng  |             |
 |   3 |      Võ Thị Kim Ý     |   2A202603965   |  Sản phẩm và kinh doanh   |             |
 |   4 |   Vương Thu Thảo         |   2A202603966   |   Vận hành và pháp lý  |             |
@@ -90,3 +90,43 @@ Vai **Kỹ sư cổng**.
 
 - **Học được:** một cổng "đạt 100% bộ nền" vẫn có thể bỏ lọt cả một loại lỗi. Cổng 1 so số tiền với quyền lợi của **một** lần hoàn, nên hoàn trùng cùng đơn ở thẻ S5 lọt qua, vì bộ nền không bao giờ có hai ticket cùng đơn trong một ngày. Phải hỏi "trường này là nguồn sự thật hay bản sao" (`refund_status` so với sổ cái) trước khi tin nó.
 - **Còn chưa chắc:** cổng trần lỗi hãng (`escalate` ở bước ghi lỗi) chạy **sau** khi tiền đã hoàn. Chưa rõ nên chặn sớm hơn ở `issue_refund`, hay giữ như hiện tại để không làm khách chờ.
+
+## KhongNgocAnh-2A202603974
+
+### Phần việc phụ trách
+
+**Trưởng nhóm** & vai **Kỹ sư cổng**.
+- **CP1:** thiết lập repo nhóm, cập nhật `TEAM.md` và `submission/submission.json`.
+- **Phiếu B:** câu 2.1 (B0 dòng 1, B1), câu 2.7 (B7.2), câu 2.8 (B7.3).
+- **Phiếu C (thẻ S5):** kéo thẻ `incidents/S5`, câu 3.4 (C6), câu 3.5 (C7, cập nhật C0 dòng 2–4), câu 3.6 (C8).
+- **File:** `TEAM.md`, `submission/submission.json`, `incidents/S5/`, `lab10/guards.py` (vòng 2), `lab10/monitors.py`, `config/operating_gates.json` (vòng 2).
+
+### Đóng góp cụ thể
+
+- **CP1:** Điền thông tin nhóm, bảng thành viên trong `TEAM.md` và danh sách `members` trong `submission/submission.json`.
+- **2.1:** Chạy đánh giá baseline và `lab10.gate`, phân tích các ngưỡng `[CHƯA]` đạt (`wrongful_refund_vnd = 20000`, `wrongful_carrier_faults = 1`), phân khúc kho/hãng xấu nhất (HCM, `?`, VNX) và đề xuất khuyến nghị kết hợp.
+- **2.7–2.8:** Nêu 2 bước tránh rò rỉ dữ liệu; thiết kế và chạy 2 ticket hiểm `--adhoc` (`O-1002 · C-02` và `O-1001 · C-01`) ở mốc `after` để kiểm tra tính chất chống tự khai số ngày trễ và tiêm lệnh.
+- **Nhận thẻ S5:** Fetch và commit thư mục `incidents/S5` (4 file) vào repo nhóm.
+- **3.4 (C6):** Dựng fault tree trước khi sửa gồm 3 nhánh (hoàn trùng cùng đơn, hoàn trùng khoản CSKH hoàn tay, chi phí LLM + công người vượt làm tay & ROI âm ở độ phủ thấp) kèm bảng specification và giả định môi trường.
+- **3.5 (C7, C0):** Sửa `lab10/guards.py` (`pre_guard` dùng `Verdict.rewrite` cắt phần dán kèm dài; `_gate_refund` đối chiếu `ledger_rows` trừ khoản đã hoàn kể cả `basis: manual` và kiểm `approval_id` chưa dùng); cập nhật `config/operating_gates.json` (mở `pilot_scope` sang 4 kho bán lẻ `HN, HCM, DN, CT`, điền `operations` và `legal`); chạy `eval` (`S5 · after`, `base · after`) và `grade`.
+- **3.6 (C8):** Thêm hàm `max_cost_per_ticket_by_warehouse_vnd` vào `lab10/monitors.py` và điền bảng thước đo → dữ liệu → cách tính.
+
+### Bằng chứng
+
+- **Commit:**
+  - `d85fba9`: cập nhật `TEAM.md` và `submission/submission.json`
+  - `da6ae03`: câu 2.1 (`B0`, `B1`)
+  - `b1a598a`: nhận thẻ `incidents/S5`
+  - `fabd8f3`: câu 2.7 và 2.8 (`B7.2`, `B7.3`)
+  - `afa325b`: câu 3.4, 3.5, 3.6 (`guards.py`, `monitors.py`, `operating_gates.json`, `C0`, `C6`, `C7`, `C8`)
+- **Mã lần chạy:**
+  - `R-base-before-20261119-155049-b45eeb` (baseline vòng 1)
+  - `R-S5-after-20261119-172326-4837cf` (`S5 · after`: `pass_rate = 1.0`, hoàn sai `0đ`, lỗi oan `0`, `ROI = 3.15`)
+  - `R-base-after-20261119-172333-4837cf` (`base · after`: 110/110 đạt, không regression)
+  - `R-S5-grade-20261119-172334-4837cf` (`visible ✅`, `regression ✅`, `monitor ✅`)
+- **Dòng trong phiếu:** Phiếu B mục B0 dòng 1, B1, B7.2, B7.3; Phiếu C mục C0 dòng 2–4, C6, C7, C8.
+
+### Exit ticket
+
+- **Học được:** Kiểm soát rủi ro cần đi từ cả nguồn sự thật dữ liệu (`ledger_rows` thay cho cờ batch `refund_status`) lẫn bài toán kinh doanh (cân bằng chi phí LLM, công người và độ phủ pilot để ROI không bị âm).
+- **Còn chưa chắc:** Ngưỡng cắt `> 1200` ký tự hoặc tách theo `\n---` ở `pre_guard` có thể làm mất thông tin nếu khách ngoài thực tế viết dài nhưng đặt nội dung chính ở cuối đoạn văn bản.
