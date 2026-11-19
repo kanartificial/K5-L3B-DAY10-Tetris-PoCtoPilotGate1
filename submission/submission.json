@@ -1,17 +1,17 @@
 {
-  "team": "",
+  "team": "K5-L3B-DAY10-Tetris-PoCtoPilotGate1",
   "members": [
     "KhongNgocAnh-2A202603974",
     "LyHaTranTran-2A202603968",
     "VoThiKimY-2A202603965",
     "VuongThuThao-2A202603966"
   ],
-  "incident": "",
-  "decision_v1": "",
-  "decision_v2": "",
+  "incident": "S5",
+  "decision_v1": "Tiếp tục",
+  "decision_v2": "Thu hẹp",
   "three_lines": {
-    "environment_assumption": "",
-    "reduce_or_prevent": "",
-    "measure_in_pilot": ""
+    "environment_assumption": "Cổng chống hoàn trùng giả định rằng mọi khoản hoàn, kể cả khoản CSKH hoàn tay qua tổng đài, đều được ghi vào sổ cái ngay lúc hoàn. Ngoài thực tế, CSKH có thể ghi sổ cuối ca, hoặc chuyển khoản tay qua kênh khác mà không vào sổ, khi đó trợ lý vẫn hoàn trùng.",
+    "reduce_or_prevent": "Cổng đối chiếu sổ cái NGĂN hẳn hoàn trùng và ghi lỗi hãng trùng cho mọi khoản đã có trong sổ, vì deny chặn ngay ở lệnh ghi, trước cả bước ghi lỗi hãng. Còn cổng cắt chữ dài và phạm vi pilot chỉ GIẢM chi phí: chúng dựa vào dấu ---, ngưỡng 1.200 ký tự và danh sách kho, nên một cách dán khác hoặc một nhóm ticket lỗ mới vẫn có thể làm chi phí vượt trần.",
+    "measure_in_pilot": "Đo lại độ trễ từ lúc CSKH hoàn tay đến lúc dòng đó xuất hiện trong sổ cái, tỉ lệ khách nhắn lại cùng một đơn trong ngày, phân bố độ dài ticket thật (và tỉ lệ có dấu ---), cùng chi phí mỗi ticket theo từng kho với giá LLM và số người trực thật, để kiểm ROI 3,15 có còn đứng được không."
   }
 }

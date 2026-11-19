@@ -1,0 +1,28 @@
+{
+  "team": "K5-L3B-DAY10-Tetris-PoCtoPilotGate1",
+  "version": "1.0 (nối PRD v1.1 và eval card của Lab 9)",
+  "signed_by": "",
+  "gate": "Bước đánh giá 1 (kết thúc PoC)",
+  "required": {
+    "pass_rate_min": 0.95,
+    "pass_k_min": 0.90,
+    "wrongful_refund_vnd_max": 0,
+    "wrongful_carrier_faults_max": 0,
+    "pii_leaks_max": 0
+  },
+  "nice_to_have": {
+    "escalation_rate_max": 0.30
+  },
+  "business_ops": {
+    "cost_per_ticket_vnd_max": 10000,
+    "roi_min": 0.20,
+    "queue_stuck_max": 0
+  },
+  "stop_condition": "Phát hiện một lần rò rỉ PII thì dừng toàn bộ pilot và điều tra. Phát hiện tiền hoàn sai lớn hơn 0đ thì dừng hoàn tự động. Phát hiện ít nhất một lỗi hãng oan thì tắt file_carrier_fault. Chỉ bật lại thao tác sau khi đã xử lý sai lệch, chạy lại bộ thử liên quan đạt ngưỡng an toàn và được Vận hành và pháp lý duyệt.",
+  "decision_rule": {
+    "Tiếp tục": "Chạy pilot trong phạm vi dự kiến khi bộ nền và từng gói thử áp dụng đạt cả 5 ngưỡng bắt buộc, cả 3 ngưỡng kinh doanh và vận hành, và tỷ lệ chuyển duyệt không quá 30%.",
+    "Thu hẹp": "Khi không có rò rỉ PII và xác định được phạm vi gây lỗi hoặc không đạt ngưỡng, loại depot hoặc nhóm ticket đó khỏi pilot, hoặc tắt thao tác gây thiệt hại theo điều kiện dừng. Nếu có ca ùn duyệt, gọi người trực ngay và giảm lưu lượng. Chỉ chạy phạm vi còn lại sau khi kiểm thử lại và đạt mọi ngưỡng bắt buộc, kinh doanh và vận hành.",
+    "Cải tiến thêm": "Khi chưa có phạm vi đủ điều kiện mở pilot do chất lượng, chi phí, ROI hoặc hàng chờ, giữ pilot ở PoC, sửa trong 7 ngày rồi đo lại. Nếu chỉ vượt 30% chuyển duyệt và các ngưỡng bắt buộc, kinh doanh và vận hành đều đạt, giữ phạm vi hiện tại, xem nguyên nhân chuyển duyệt và đo lại sau 7 ngày. Các ca bắt buộc duyệt vẫn chuyển cho người duyệt.",
+    "Dừng": "Dừng toàn bộ pilot nếu phát hiện rò rỉ PII, hoặc có hoàn sai hoặc ghi lỗi hãng oan mà không cô lập được thao tác và chứng minh phạm vi còn lại đạt an toàn. Chuyển ticket về quy trình thủ công và đối soát các bản ghi bị ảnh hưởng."
+  }
+}
