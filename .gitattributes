@@ -1,0 +1,9 @@
+# Ba file này được ký / chốt hash khi đang xuống dòng CRLF (máy Windows).
+# eol=crlf: git vẫn lưu LF (khớp commit 'Sign acceptance criteria'), nhưng checkout ra CRLF trên MỌI máy,
+# để hash khớp config/acceptance_criteria.lock và config/round1.lock. Các file khác giữ LF (khớp lab10/MANIFEST.json).
+config/acceptance_criteria.json eol=crlf
+config/operating_gates.round1.json eol=crlf
+lab10/guards_round1.py eol=crlf
+submission/config/acceptance_criteria.json eol=crlf
+submission/config/operating_gates.round1.json eol=crlf
+submission/code/guards_round1.py eol=crlf

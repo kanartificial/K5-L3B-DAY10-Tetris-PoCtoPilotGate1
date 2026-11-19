@@ -1,17 +1,17 @@
-# Tự kiểm tra sự cố S5 · FAIL
+# Tự kiểm tra sự cố S5 · PASS-VISIBLE (chưa chạy test ẩn)
 
 *Đây là kết quả TỰ KIỂM TRA của bàn, không phải điểm. Bài được một team chấm tự động chấm lại sau buổi học.*
 
-- Mã lần chạy: `R-S5-grade-20261119-175900-74af03` · bàn: `K5-L3B-DAY10-Tetris-PoCtoPilotGate1` · grader `lab10-1.0` · 1.095s
-- Ba mốc: base `R-S5-before-20261119-175900-74af03` · prepared `R-S5-prepared-20261119-175901-74af03` · after `R-S5-after-20261119-175901-74af03` (report + trace trong runs/)
+- Mã lần chạy: `R-S5-grade-20261119-224722-b19228` · bàn: `K5-L3B-DAY10-Tetris-PoCtoPilotGate1` · grader `lab10-1.0` · 0.839s
+- Ba mốc: base `R-S5-before-20261119-224722-b19228` · prepared `R-S5-prepared-20261119-224722-b19228` · after `R-S5-after-20261119-224722-b19228` (report + trace trong runs/)
 - Mốc prepared (cổng vòng 1): đã chốt `ae87608c`, còn nguyên
-- Hash code đội (guards + monitors + switches + cổng vận hành): `74af03d9e713`
+- Hash code đội (guards + monitors + switches + cổng vận hành): `b192289558cf`
 - Hash Bản tiêu chí chấp nhận: `bdfd47ec40aa` · đã ký: `bdfd47ec40aa` · KHÔNG ĐỔI
 - Thẻ đang kiểm: `S5` · dòng "Thẻ đã bốc" bàn ghi trong phiếu: S5 · khớp
 
 | Kiểm | Kết quả | Chi tiết |
 |---|---|---|
-| 1 integrity | ❌ | file khoá bị đổi: ['data/tickets.jsonl', 'data/world.json', 'incidents/S5/card.json', 'incidents/S5/card.md', 'incidents/S5/tickets.jsonl', 'incidents/S5/world_patch.json', 'lab10/__init__.py', 'lab10/_gradectx.py', 'lab10/_noop_guards.py', 'lab10/agent.py', 'lab10/check_submission.py', 'lab10/checkpoint.py', 'lab10/criteria.py', 'lab10/eval.py', 'lab10/gate.py', 'lab10/grade.py', 'lab10/helpers.py', 'lab10/mock_llm.py', 'lab10/ops.py', 'lab10/tools.py', 'lab10/trace.py', 'lab10/world.py', 'tests/test_public.py'] |
+| 1 integrity | ✅ | file khoá bị đổi: không |
 | 2 criteria | ✅ | đã ký, còn nguyên |
 | 3 visible | ✅ | base có vấn đề: True; after sạch: True; ticket còn hỏng: không; trần còn vượt: không |
 | 4 hidden | — | máy này không có bài kiểm tra ẩn (team chấm sẽ chạy sau buổi học) |

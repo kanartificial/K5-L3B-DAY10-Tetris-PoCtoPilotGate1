@@ -133,7 +133,7 @@ Vai **Kỹ sư cổng**.
 - **Còn chưa chắc:** Ngưỡng cắt `> 1200` ký tự hoặc tách theo `\n---` ở `pre_guard` có thể làm mất thông tin nếu khách ngoài thực tế viết dài nhưng đặt nội dung chính ở cuối đoạn văn bản.
 
 
-## Vương Thu Thảo – 2A202603966
+## VuongThuThao–2A202603966
 
 ### Phần việc phụ trách
 
