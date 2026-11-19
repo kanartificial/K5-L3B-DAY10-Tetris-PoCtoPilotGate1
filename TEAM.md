@@ -120,10 +120,11 @@ Vai **Kỹ sư cổng**.
   - `fabd8f3`: câu 2.7 và 2.8 (`B7.2`, `B7.3`)
   - `afa325b`: câu 3.4, 3.5, 3.6 (`guards.py`, `monitors.py`, `operating_gates.json`, `C0`, `C6`, `C7`, `C8`)
 - **Mã lần chạy:**
-  - `R-base-before-20261119-155049-b45eeb` (baseline vòng 1)
-  - `R-S5-after-20261119-172326-4837cf` (`S5 · after`: `pass_rate = 1.0`, hoàn sai `0đ`, lỗi oan `0`, `ROI = 3.15`)
-  - `R-base-after-20261119-172333-4837cf` (`base · after`: 110/110 đạt, không regression)
-  - `R-S5-grade-20261119-172334-4837cf` (`visible ✅`, `regression ✅`, `monitor ✅`)
+  - `R-base-before-20261119-170700-94d269` (baseline vòng 1)
+  - `R-S5-after-20261119-224240-73d630` (`S5 · after`: `pass_rate = 1.0`, hoàn sai `0đ`, lỗi oan `0`, `ROI = 3.15`)
+  - `R-base-after-20261119-224241-73d630` (`base · after`: 110/110 đạt, không regression)
+  - `R-S5-grade-20261119-224250-73d630` (`visible ✅`, `regression ✅`, `monitor ✅`)
+  - *(Chạy lại trên máy gom bài để mã có trong `submission/runs/journal.jsonl`; số liệu giống hệt lần chạy gốc vì MockLLM tất định.)*
 - **Dòng trong phiếu:** Phiếu B mục B0 dòng 1, B1, B7.2, B7.3; Phiếu C mục C0 dòng 2–4, C6, C7, C8.
 
 ### Exit ticket

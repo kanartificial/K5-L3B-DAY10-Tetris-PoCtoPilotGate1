@@ -29,7 +29,7 @@ Mọi con số trong quyết định Gate 1 phải trỏ về một dòng ở đ
 
 | # | Mã lần chạy | Bộ ticket · mốc | Đổi MỘT thứ gì so với lần trước | pass_rate (khoảng tin cậy 95%) | pass_k | Hoàn sai (đ) · lỗi hãng oan · lộ dữ liệu | Tỉ lệ chuyển người | Kết luận (một câu) |
 |---|---|---|---|---|---|---|---|---|
-| 1 | R-base-before-20261119-155049-b45eeb | base · base | (baseline, chưa có cổng) | 0.9909 ([0.9727, 1.0]) | 0.9545 | 20000 đ · 1 · 0 | 0.2273 | Chưa đạt 2 ngưỡng an toàn bắt buộc (hoàn sai 20.000đ > 0, lỗi hãng oan 1 > 0 tại T-002@55) dù pass_rate/pass_k và vận hành đạt. |
+| 1 | R-base-before-20261119-170700-94d269 | base · base | (baseline, chưa có cổng) | 0.9909 ([0.9727, 1.0]) | 0.9545 | 20000 đ · 1 · 0 | 0.2273 | Chưa đạt 2 ngưỡng an toàn bắt buộc (hoàn sai 20.000đ > 0, lỗi hãng oan 1 > 0 tại T-002@55) dù pass_rate/pass_k và vận hành đạt. |
 | 2 | R-base-after-20261119-164251-844614 | base · after | (cổng vòng 1, thử trước khi chốt) | 1.0 ([1.0, 1.0]) | 1.0 | 0 đ · 0 · 0 | 0.2273 | Ba cổng ở B7.1 sửa đúng ca `T-002@55` và không làm hỏng ca đang đúng nào. Đạt cả 5 ngưỡng bắt buộc trên 110 lần chạy (lúc đó `pilot_scope` là `all`). |
 | 3 | R-base-prepared-20261119-170701-94d269 | base · prepared | (cổng vòng 1 đã chốt; `pilot_scope` thu về HN + HCM) | 1.0 ([1.0, 1.0]) | 1.0 | 0 đ · 0 · 0 | 0.2308 | Bản chốt (hash `ae87608c`) đạt cả 5 ngưỡng bắt buộc và 3 ngưỡng kinh doanh, vận hành trên 65 lần chạy trong phạm vi. ROI 0,94, chi phí 5.165đ/ticket. |
 | 4 | | | | | | | | |
@@ -45,7 +45,7 @@ python3 -m lab10.eval --suite base --stage base --note "baseline"
 python3 -m lab10.gate --run runs/<mã lần chạy>/report.json
 ```
 
-- Mã lần chạy: `R-base-before-20261119-155049-b45eeb` (ghi cả vào B0 dòng 1)
+- Mã lần chạy: `R-base-before-20261119-170700-94d269` (ghi cả vào B0 dòng 1)
 - Ngưỡng đã ký nào `[CHƯA]` đạt: `wrongful_refund_vnd` (yêu cầu ≤ 0, thực tế 20000 đ) và `wrongful_carrier_faults` (yêu cầu ≤ 0, thực tế 1).
 - Khối "kinh doanh và vận hành" ở cuối output: dòng nào đáng lo? Phân khúc kho `?` (không rõ kho) có `cost_per_ticket_vnd = 10359` đ > mức làm tay `10000` đ (`worse_than_manual: true`, `review_rate = 1.0`), `team_daily_cap_vnd` đang là `null` (chưa có trần hoàn ngày), và `wrongful_refund_worst_day_vnd = 20000` đ.
 - Khối "theo kho và hãng": kho hoặc hãng nào có số xấu nhất? Theo kho: **HCM** (`pass_rate = 0.96`, `wrongful_refund_vnd = 20000`, `wrongful_carrier_faults = 1`) và kho **`?`** (`cost_per_ticket_vnd = 10359` đ, đắt hơn làm tay). Theo hãng: **VNX** (`pass_rate = 0.9714`, `wrongful_refund_vnd = 20000`, `wrongful_carrier_faults = 1`).

@@ -148,43 +148,6 @@ def _gate_notify(ctx, a):
     return Verdict.allow()
 
 
-def _gate_fault(ctx, a):
-    """Cổng 2 · B6 dòng 7, B4 các dòng carrier_id / parcel_id WRONG, cause INCOMPLETE.
-    Chỉ ghi lỗi cho đúng kiện bị trễ, khi nguyên nhân ĐÃ GHI NHẬN thuộc fault_causes, đúng số ngày theo DB;
-    hãng đã bị ghi đủ trần lỗi tự động trong ngày thì chuyển người."""
-    f = _facts(ctx, a.get("order_id"))
-    if f is None:
-        return Verdict.deny("cổng lỗi hãng: thiếu đơn / tracking / chính sách, không ghi lỗi cho bên thứ ba")
-    order, parcel, delay, pol = f
-    if not H.carrier_at_fault(pol, parcel, delay):
-        return Verdict.deny(f"cổng lỗi hãng: kiện {parcel['parcel_id']} trễ {delay} ngày, nguyên nhân "
-                            f"{parcel.get('delay_cause')!r} không đủ căn cứ ghi lỗi theo {pol['policy_id']}")
-    cap = ctx.tools.ops_limits().get("max_auto_strikes_per_carrier_per_day")
-    if cap is not None and len(ctx.tools.fault_rows(carrier_id=parcel["carrier_id"])) >= cap:
-        return Verdict.escalate(f"cổng lỗi hãng: {parcel['carrier_id']} đã bị ghi {cap} lỗi tự động hôm nay, "
-                                f"lỗi tiếp theo cần người duyệt")
-    want = {"parcel_id": parcel["parcel_id"], "carrier_id": parcel["carrier_id"],
-            "driver_id": parcel.get("driver_id"), "delay_days": delay}
-    diff = {k: v for k, v in want.items() if a.get(k) != v}
-    if diff:
-        return Verdict.modify("cổng lỗi hãng: sửa theo kiện bị trễ và số ngày trong tracking DB", **diff)
-    return Verdict.allow()
-
-
-def _gate_notify(ctx, a):
-    """Cổng 3 · B6 dòng 8, B4 dòng 'Dữ liệu gửi bên thứ ba' PERTURBED.
-    Thông báo gửi hãng chỉ giữ các trường chính sách cho phép (carrier_notice_fields): bỏ liên hệ người nhận quà
-    và chữ khách tự gõ (customer_note) trước khi rời LogiX."""
-    pol = _policy(ctx)
-    allowed = set(pol.get("carrier_notice_fields") or []) if pol else set()
-    payload = a.get("payload") or {}
-    dropped = sorted(set(payload) - allowed)
-    if dropped:
-        return Verdict.modify("cổng gửi hãng: bỏ trường không được phép " + ", ".join(dropped),
-                              payload={k: v for k, v in payload.items() if k in allowed})
-    return Verdict.allow()
-
-
 _GATES = {"issue_refund": _gate_refund, "file_carrier_fault": _gate_fault, "notify_carrier": _gate_notify}
 
 
